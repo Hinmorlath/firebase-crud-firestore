@@ -1,12 +1,18 @@
+import {saveTask} from './firebase.js'
+
 window.addEventListener('DOMContentLoaded', () => {
 
 })
 
-const taskform = document.getElementById('task-form')
+const taskForm = document.getElementById('task-form')
 
-taskform.addEventListener('submit', (e) => {
+taskForm.addEventListener('submit', (e) => {
     e.preventDefault()
 
-    const title = taskform['task-title']
-    const description = taskform['task-description']
+    const title = taskForm['task-title']
+    const description = taskForm['task-description']
+
+    saveTask(title.value, description.value)
+
+    taskForm.reset()
 })

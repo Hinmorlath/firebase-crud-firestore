@@ -11,7 +11,8 @@ import {
   getDoc,
   updateDoc
 } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-storage.js"
+import { getStorage, ref, uploadBytes,
+        uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-storage.js"
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -49,8 +50,29 @@ export const saveImage = file => {
   console.log(file);
 
   const storageRef = ref(storage, `Images/${file.name}`);
-
   uploadBytes(storageRef, file).then((snapshot) => {
     console.log('Uploaded a blob or file!');
   });
-}
+  const uploadTask = uploadBytesResumable(storageRef, file);
+
+  uploadTask.on('state_changed', 
+  (snapshot) => {
+    // Observe state change events such as progress, pause, and resume
+    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    //console.log('La carga está en un ' + progress + '%');
+    document.querySelector('#progress').style.width = `${progress}%`;
+  }, 
+  (error) => {
+    // Handle unsuccessful uploads
+  }, 
+  () => {
+    // Handle successful uploads on complete
+    // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+      //document.querySelector('#progress').value = '¡Completado!'
+      document.querySelector('#image').src = downloadURL;
+      console.log('File available at', downloadURL);
+    });
+  }
+);}

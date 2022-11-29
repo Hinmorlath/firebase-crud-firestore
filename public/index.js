@@ -1,9 +1,35 @@
-import { saveTask, getTasks, onGetTasks, deleteTask, getTask, updateTask, saveImage } from './firebase.js'
+import { saveTask, getTasks, onGetTasks, deleteTask, getTask, updateTask,
+     saveImage } from './firebase.js';
+     
+
 const taskForm = document.getElementById('task-form')
 const tasksContainer = document.getElementById('task-container')
 
 let editStatus = false;
 let id = '';
+
+const saveSubmit = (e) => {
+    e.preventDefault();
+    const title = formTask['task-title'].value;
+    const description = formTask['task-description'].value;
+    const imageUrl = document.querySelector('#image').src;
+
+    if(title.length > 3 && description.length > 3){
+        if(!editStatus){
+            saveTask(title, description, imageUrl);
+        } else {
+            updateTask(idForEdit, {
+                'title': title, 'description': description
+            });
+            editStatus = false;
+            document.querySelector('#btn-task-save').innerText = 'Save';
+        }
+        document.querySelector('#image').setAttribute('src', '');
+        formTask.reset();
+    } else{
+        alert('Debes escribir algo');
+    }
+}
 
 const uploadFileAction = (e) => {
     const file = e.target.files[0];
@@ -24,6 +50,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             <div class="card card-body mt-2 border-primary">
                 <h3 class="h5">${task.title}</h3>
                 <p>${task.description}</p>
+                <img src="${task.imageUrl}"/>
                 <div>
                     <button class="btn btn-primary btn-delete" data-id="${doc.id}">Eliminar</button>
                     <button class="btn btn-secondary btn-edit" data-id="${doc.id}">Editar</button>

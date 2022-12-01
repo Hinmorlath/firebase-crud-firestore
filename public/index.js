@@ -2,7 +2,7 @@ import { saveTask, getTasks, onGetTasks, deleteTask, getTask, updateTask,
      saveImage } from './firebase.js';
      
 
-const taskForm = document.getElementById('task-form')
+const formTask = document.getElementById('task-form')
 const tasksContainer = document.getElementById('task-container')
 
 let editStatus = false;
@@ -12,9 +12,10 @@ const saveSubmit = (e) => {
     e.preventDefault();
     const title = formTask['task-title'].value;
     const description = formTask['task-description'].value;
-    const imageUrl = document.querySelector('#image').src;
-
+    const imageUrl = '' || document.querySelector('#image').src;
+    
     if(title.length > 3 && description.length > 3){
+        console.log(imageUrl);
         if(!editStatus){
             saveTask(title, description, imageUrl);
         } else {
@@ -50,7 +51,13 @@ window.addEventListener('DOMContentLoaded', async () => {
             <div class="card card-body mt-2 border-primary">
                 <h3 class="h5">${task.title}</h3>
                 <p>${task.description}</p>
+            `;
+            if(task.imageUrl === ''){
+                tasksContainer.innerHTML +=`    
                 <img src="${task.imageUrl}"/>
+                `
+            }
+                tasksContainer.innerHTML +=`
                 <div>
                     <button class="btn btn-primary btn-delete" data-id="${doc.id}">Eliminar</button>
                     <button class="btn btn-secondary btn-edit" data-id="${doc.id}">Editar</button>
@@ -87,29 +94,5 @@ window.addEventListener('DOMContentLoaded', async () => {
     //document.querySelector('#task-container').addEventListener('click', actionButtons);
     //taskForm.addEventListener('submit', saveSubmit);
     document.querySelector('#file').addEventListener('change', uploadFileAction);
-})
-
-taskForm.addEventListener('submit', (e) => {
-    e.preventDefault()
-
-    const title = taskForm['task-title'].value;
-    const description = taskForm['task-description'].value;
-
-    if (title.length > 3 && description.length >3){
-
-    if (!editStatus) {
-        saveTask(title, description)
-    } else {
-        updateTask(id, {
-            title: title,
-            description: description
-        });
-
-        editStatus = false;
-        taskForm['btn-task-save'].innerText = 'Save'
-    }
-    taskForm.reset();
-    }else{
-        alert('debes escribir algo')
-    }
+    formTask.addEventListener('submit', saveSubmit)
 })

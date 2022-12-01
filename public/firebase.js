@@ -31,8 +31,10 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore()
 
-export const saveTask = (title, description) =>
-  addDoc(collection(db, 'tasks'), { title, description });
+export const saveTask = (title, description, imageUrl) =>{
+  console.log(title, description, imageUrl)
+  addDoc(collection(db, 'tasks'), { title, description, imageUrl });
+}
 
 const storage = getStorage();
 
@@ -50,9 +52,7 @@ export const saveImage = file => {
   console.log(file);
 
   const storageRef = ref(storage, `Images/${file.name}`);
-  uploadBytes(storageRef, file).then((snapshot) => {
-    console.log('Uploaded a blob or file!');
-  });
+
   const uploadTask = uploadBytesResumable(storageRef, file);
 
   uploadTask.on('state_changed', 
